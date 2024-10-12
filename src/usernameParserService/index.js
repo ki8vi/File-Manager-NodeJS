@@ -16,7 +16,7 @@ export default class UsernameParser {
     #parseEnv() {
         if (!this.username) {
             const envUsername = process.env.npm_config_username;
-            if (envUsername) {
+            if (envUsername !== 'true') {
                 this.username = envUsername;
             }
         }

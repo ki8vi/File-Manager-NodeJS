@@ -1,15 +1,19 @@
-import CONSTANTS from "../constants";
+import CONSTANTS from "../constants/index.js";
 
-export class MessageService {
+export default class MessageService {
     constructor(username) {
         this.username = username;
     }
 
     showGreet() {
-        return `${CONSTANTS.GREET_USER}, ${this.username}!`;
+        console.log(`${CONSTANTS.GREET_MESSAGE}, ${this.username}!`);
     }
 
     showBye() {
-        return `${CONSTANTS.BYE_MESSAGE}, ${this.username}, goodbye!`;
+        console.log(`${CONSTANTS.BYE_MESSAGE}, ${this.username}, goodbye!`);
+    }
+
+    showCurrentDirectory(path) {
+        console.log(`${CONSTANTS.PATH_NOTIFICATION} ${path}`);
     }
 }
