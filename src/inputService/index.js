@@ -1,19 +1,22 @@
 import { createInterface } from 'node:readline/promises';
+import { join } from 'node:path';
 import MessageService from '../messageService/index.js';
 import NavigationService from '../navigationService/index.js';
 import ListService from '../listService/index.js';
-
+import FileOperationsService from '../fileOperationsService/index.js';
+import CONSTANTS from '../constants/index.js';
 export default class InputService {
     constructor(username) {
         this.username = username;
         this.readline = createInterface({
         input: process.stdin,
         output: process.stdout,
-        prompt: '> ',
+        prompt: `${CONSTANTS.ANSI_COLOR_BOLD}${CONSTANTS.ANSI_COLOR_BLUE} > ${CONSTANTS.ANSI_RESET}`,
        });
        this.messageService = new MessageService(this.username);
        this.navigationService = new NavigationService();
        this.listService = new ListService();
+       this.fileOperationsService = new FileOperationsService();
     }
 
     start() {
@@ -31,6 +34,7 @@ export default class InputService {
         this.readline.on('line', async (input) => {
             const parsedInput = input.trim();
             const [userInput, ...cliArgs] = parsedInput.split(' ');
+            const cliArgsStr = cliArgs.join(' ');
             try {
                 switch(userInput) {
                     case '.exit':
@@ -40,10 +44,13 @@ export default class InputService {
                         this.navigationService.up();
                         break;
                     case 'cd':
-                        await this.navigationService.cd(cliArgs.join(' '));
+                        await this.navigationService.cd(cliArgsStr);
                         break;
                     case 'ls':
                         await this.listService.showContentOfDirectory(this.navigationService.getCurrentDirectory);
+                        break;
+                    case 'cat':
+                        await this.fileOperationsService.cat(join(this.navigationService.getCurrentDirectory, cliArgsStr));
                         break;
                     default:
                         this.messageService.showInvalidInputMsg();

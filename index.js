@@ -2,7 +2,7 @@ import InputService from './src/inputService/index.js';
 import UsernameParser from './src/usernameParserService/index.js';
 
 
-class AppController {
+class App {
     constructor(username) {
         this.inputService = new InputService(username);
     }
@@ -12,7 +12,7 @@ class AppController {
     }
 }
 const username = new UsernameParser().getUsername();
-const myApp = new AppController(username);
+const myApp = new App(username);
 myApp.start();
 
 
