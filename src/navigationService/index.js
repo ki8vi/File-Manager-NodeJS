@@ -22,7 +22,7 @@ export default class NavigationService {
         } else {
             newDirectory = resolve(this._currentDir, path);
         }
-        // const newDirectory = resolve(this._currentDir, path);
+
         await access(newDirectory);
         const stats = await stat(newDirectory);
         if (stats.isDirectory()) {

@@ -1,4 +1,5 @@
 import { createReadStream } from 'node:fs';
+import { writeFile } from 'node:fs/promises';
 import { EOL } from 'node:os';
 import CONSTANTS from '../constants/index.js';
 
@@ -25,5 +26,9 @@ export default class FileOperationsService {
                 resolve();
             });
         });
+    }
+
+    async createFile(path) {
+        await writeFile(path, '', 'utf8');
     }
 }

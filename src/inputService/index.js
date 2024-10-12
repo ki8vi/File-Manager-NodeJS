@@ -52,6 +52,9 @@ export default class InputService {
                     case 'cat':
                         await this.fileOperationsService.cat(join(this.navigationService.getCurrentDirectory, cliArgsStr));
                         break;
+                    case 'add':
+                        await this.fileOperationsService.createFile(join(this.navigationService.getCurrentDirectory, cliArgsStr));
+                        break;
                     default:
                         this.messageService.showInvalidInputMsg();
                         break;
