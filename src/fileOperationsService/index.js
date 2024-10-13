@@ -1,6 +1,7 @@
 import { createReadStream } from 'node:fs';
-import { writeFile } from 'node:fs/promises';
+import { writeFile,rename } from 'node:fs/promises';
 import { EOL } from 'node:os';
+import { join } from 'node:path';
 import CONSTANTS from '../constants/index.js';
 
 export default class FileOperationsService {
@@ -17,8 +18,8 @@ export default class FileOperationsService {
         });
 
         return new Promise((resolve, reject) => {
-            readStream.on('error', (err) => {
-                reject(new Error(err.message));
+            readStream.on('error', () => {
+                reject(new Error('Invalid arguments'));
             });
 
             readStream.on('end', () => {
@@ -30,5 +31,20 @@ export default class FileOperationsService {
 
     async createFile(path) {
         await writeFile(path, '', 'utf8');
+    }
+
+    async renameFile(path, args) {
+        const [targetFile, newFileName] = this.parseArgs(args);
+        await rename(join(path, targetFile), join(path, newFileName));
+    }
+
+    parseArgs(args) {
+        const cliArgsStr = args.join(' ');
+        const parsedArgs = cliArgsStr.match(/(?:[^\s'"]+|'[^']*'|"[^"]*")+/g);
+     
+        if (!parsedArgs || parsedArgs.length < 2) {
+            throw new Error('Invalid arguments');
+        }
+        return parsedArgs.map(arg => arg.replace(/['"]/g, ''));
     }
 }

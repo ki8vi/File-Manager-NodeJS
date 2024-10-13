@@ -55,12 +55,16 @@ export default class InputService {
                     case 'add':
                         await this.fileOperationsService.createFile(join(this.navigationService.getCurrentDirectory, cliArgsStr));
                         break;
+                    case 'rn':
+                        await this.fileOperationsService.renameFile(this.navigationService.getCurrentDirectory, cliArgs);
+                        break;
                     default:
                         this.messageService.showInvalidInputMsg();
                         break;
                 }
-            } catch {
-                this.messageService.showOpearationFailedMsg();
+            } catch(err) {
+                if(err.message === 'Invalid arguments' || err.code === 'EISDIR') this.messageService.showInvalidInputMsg();
+                else this.messageService.showOpearationFailedMsg();
             }
             this.#showDirectory();
         });
