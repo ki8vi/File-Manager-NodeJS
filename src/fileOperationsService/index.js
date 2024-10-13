@@ -1,8 +1,9 @@
 import { createReadStream, createWriteStream } from 'node:fs';
 import { writeFile, rename, unlink, access, constants } from 'node:fs/promises';
 import { EOL } from 'node:os';
-import { join, resolve, isAbsolute, dirname, basename } from 'node:path';
+import { join, dirname, basename } from 'node:path';
 import CONSTANTS from '../constants/index.js';
+import ArgsPathParser from '../argsParser/index.js';
 
 export default class FileOperationsService {
 
@@ -30,29 +31,19 @@ export default class FileOperationsService {
     }
 
     async renameFile(path, args) {
-        const [targetFile, newFileName] = this.#parseArgs(args);
+        const [targetFile, newFileName] = ArgsPathParser.parseArgs(args);
 
-        const absTargetFilePath = this.#getAbsPath(path, targetFile);
+        const absTargetFilePath = ArgsPathParser.getAbsPath(path, targetFile);
         const newRenamedFile = join(dirname(absTargetFilePath), newFileName);
 
         await rename(absTargetFilePath, newRenamedFile);
     }
 
-    #parseArgs(args) {
-        const cliArgsStr = args.join(' ');
-        const parsedArgs = cliArgsStr.match(/(?:[^\s'"]+|'[^']*'|"[^"]*")+/g);
-     
-        if (!parsedArgs || parsedArgs.length < 2) {
-            throw new Error('Invalid arguments');
-        }
-        return parsedArgs.map(arg => arg.replace(/['"]/g, ''));
-    }
-
     async copyFile(path, args) {
-        const [targetFile, copyFilePath] = this.#parseArgs(args);
+        const [targetFile, copyFilePath] = ArgsPathParser.parseArgs(args);
 
-        const absTargetFilePath = this.#getAbsPath(path, targetFile);
-        const absCopyFilePath = this.#getAbsPath(path, copyFilePath);
+        const absTargetFilePath = ArgsPathParser.getAbsPath(path, targetFile);
+        const absCopyFilePath = ArgsPathParser.getAbsPath(path, copyFilePath);
         await access(absTargetFilePath, constants.F_OK);
         return new Promise((resolve, reject) => {
             const readStream = createReadStream(absTargetFilePath);
@@ -70,10 +61,6 @@ export default class FileOperationsService {
         });
     }
 
-    #getAbsPath(currPath, targetPath) {
-        return isAbsolute(targetPath) ? targetPath : resolve(currPath, targetPath);
-    }
-
     async moveFile(path, args) {
         await this.copyFile(path, args);
         await this.deleteFile(path, args);
@@ -81,7 +68,7 @@ export default class FileOperationsService {
 
     async deleteFile(path, args) {
         const [targetFile] = args;
-        const absTargetFilePath = this.#getAbsPath(path, targetFile);
+        const absTargetFilePath = ArgsPathParser.getAbsPath(path, targetFile);
         await access(absTargetFilePath, constants.F_OK);
         await unlink(absTargetFilePath);
     }

@@ -5,6 +5,7 @@ import NavigationService from '../navigationService/index.js';
 import ListService from '../listService/index.js';
 import FileOperationsService from '../fileOperationsService/index.js';
 import SystemInfoService from '../systemInfoService/index.js';
+import HashService from '../hashService/index.js';
 import CONSTANTS from '../constants/index.js';
 
 export default class InputService {
@@ -72,12 +73,15 @@ export default class InputService {
                     case 'os':
                         await SystemInfoService.printOsInfo(cliArgs);
                         break;
+                    case 'hash':
+                        await HashService.calculate(this.navigationService.getCurrentDirectory, cliArgs);
+                        break;
                     default:
                         this.messageService.showInvalidInputMsg();
                         break;
                 }
             } catch(err) {
-                // console.error(err);
+                console.error(err);
                 if(err.message === 'Invalid arguments' || err.code === 'EISDIR') this.messageService.showInvalidInputMsg();
                 else this.messageService.showOpearationFailedMsg();
             }
