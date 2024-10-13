@@ -13,10 +13,6 @@ export default class FileOperationsService {
             process.stdout.write(`${CONSTANTS.ANSI_COLOR_BOLD}${CONSTANTS.ANSI_COLOR_LIGHT}${ch}`);
         });
 
-        readStream.on('end', () => {
-            process.stdout.write(`${EOL}`);
-        });
-
         return new Promise((resolve, reject) => {
             readStream.on('error', () => {
                 reject(new Error('Invalid arguments'));
@@ -80,7 +76,11 @@ export default class FileOperationsService {
 
     async moveFile(path, args) {
         await this.copyFile(path, args);
-        const [targetFile] = this.#parseArgs(args);
+        await this.deleteFile(path, args);
+    }
+
+    async deleteFile(path, args) {
+        const [targetFile] = args;
         const absTargetFilePath = this.#getAbsPath(path, targetFile);
         await access(absTargetFilePath, constants.F_OK);
         await unlink(absTargetFilePath);

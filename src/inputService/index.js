@@ -65,6 +65,9 @@ export default class InputService {
                     case 'mv':
                         await this.fileOperationsService.moveFile(this.navigationService.getCurrentDirectory, cliArgs);
                         break;
+                    case 'rm':
+                        await this.fileOperationsService.deleteFile(this.navigationService.getCurrentDirectory, cliArgs);
+                        break;
                     default:
                         this.messageService.showInvalidInputMsg();
                         break;
