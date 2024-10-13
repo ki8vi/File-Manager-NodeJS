@@ -3,6 +3,8 @@ const cmdMap = {
     '--cpus': 'showCpus',
     '--homedir': 'showHomeDir',
     '--username': 'showUsername',
+    '--architecture': 'showCpuArchitecture',
+    
 };
 
 export default cmdMap;

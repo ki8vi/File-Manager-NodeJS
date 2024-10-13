@@ -1,4 +1,4 @@
-import { EOL, cpus, homedir, userInfo } from 'node:os';
+import { EOL, cpus, homedir, userInfo, arch } from 'node:os';
 import cmdMap from './infoMap.js';
 
 export default class SystemInfoService {
@@ -32,6 +32,10 @@ export default class SystemInfoService {
 
     static showUsername() {
         console.log(userInfo().username);
+    }
+
+    static showCpuArchitecture () {
+        console.log(arch());
     }
 
 }
