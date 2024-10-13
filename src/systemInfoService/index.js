@@ -1,4 +1,4 @@
-import { EOL, cpus, homedir } from 'node:os';
+import { EOL, cpus, homedir, userInfo } from 'node:os';
 import cmdMap from './infoMap.js';
 
 export default class SystemInfoService {
@@ -23,10 +23,15 @@ export default class SystemInfoService {
             return acc;
         }, []);
         console.table(cpusInfo);
+        console.log('Total CPUs: ', cpus().length);
     }
 
     static showHomeDir() {
         console.log(homedir());
+    }
+
+    static showUsername() {
+        console.log(userInfo().username);
     }
 
 }
