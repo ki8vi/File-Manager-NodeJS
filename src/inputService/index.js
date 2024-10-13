@@ -4,6 +4,7 @@ import MessageService from '../messageService/index.js';
 import NavigationService from '../navigationService/index.js';
 import ListService from '../listService/index.js';
 import FileOperationsService from '../fileOperationsService/index.js';
+import SystemInfoService from '../systemInfoService/index.js';
 import CONSTANTS from '../constants/index.js';
 
 export default class InputService {
@@ -67,6 +68,9 @@ export default class InputService {
                         break;
                     case 'rm':
                         await this.fileOperationsService.deleteFile(this.navigationService.getCurrentDirectory, cliArgs);
+                        break;
+                    case 'os':
+                        await SystemInfoService.printOsInfo(cliArgs);
                         break;
                     default:
                         this.messageService.showInvalidInputMsg();

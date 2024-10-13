@@ -37,7 +37,7 @@ export default class NavigationService {
         return this._currentDir;
     }
 
-    set setCurrentDirectory(newDirectory) {
-        this._currentDir = newDirectory;
-    }
+    // set setCurrentDirectory(newDirectory) {
+    //     this._currentDir = newDirectory;
+    // }
 }
