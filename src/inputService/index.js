@@ -58,11 +58,15 @@ export default class InputService {
                     case 'rn':
                         await this.fileOperationsService.renameFile(this.navigationService.getCurrentDirectory, cliArgs);
                         break;
+                    case 'cp':
+                        await this.fileOperationsService.copyFile(this.navigationService.getCurrentDirectory, cliArgs);
+                        break;
                     default:
                         this.messageService.showInvalidInputMsg();
                         break;
                 }
             } catch(err) {
+                console.error(err);
                 if(err.message === 'Invalid arguments' || err.code === 'EISDIR') this.messageService.showInvalidInputMsg();
                 else this.messageService.showOpearationFailedMsg();
             }
