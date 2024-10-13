@@ -1,4 +1,4 @@
-import { EOL } from 'node:os';
+import { EOL, cpus } from 'node:os';
 import cmdMap from './infoMap.js';
 
 export default class SystemInfoService {
@@ -15,5 +15,13 @@ export default class SystemInfoService {
         console.log(`${JSON.stringify(EOL)}`);
     }
 
-
+    static showCpus() {
+        const cpusInfo = cpus().reduce((acc, el) => {
+            const model = el.model;
+            const speed = `${el.speed / 1000} GHz`;
+            acc.push({ model, 'speed (clock rate)': speed });
+            return acc;
+        }, []);
+        console.table(cpusInfo);
+    }
 }

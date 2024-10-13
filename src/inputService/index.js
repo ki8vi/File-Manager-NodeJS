@@ -77,7 +77,7 @@ export default class InputService {
                         break;
                 }
             } catch(err) {
-                console.error(err);
+                // console.error(err);
                 if(err.message === 'Invalid arguments' || err.code === 'EISDIR') this.messageService.showInvalidInputMsg();
                 else this.messageService.showOpearationFailedMsg();
             }
