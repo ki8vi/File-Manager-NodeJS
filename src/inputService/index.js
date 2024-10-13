@@ -5,6 +5,7 @@ import NavigationService from '../navigationService/index.js';
 import ListService from '../listService/index.js';
 import FileOperationsService from '../fileOperationsService/index.js';
 import CONSTANTS from '../constants/index.js';
+
 export default class InputService {
     constructor(username) {
         this.username = username;
@@ -60,6 +61,9 @@ export default class InputService {
                         break;
                     case 'cp':
                         await this.fileOperationsService.copyFile(this.navigationService.getCurrentDirectory, cliArgs);
+                        break;
+                    case 'mv':
+                        await this.fileOperationsService.moveFile(this.navigationService.getCurrentDirectory, cliArgs);
                         break;
                     default:
                         this.messageService.showInvalidInputMsg();

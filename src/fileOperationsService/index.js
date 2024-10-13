@@ -1,5 +1,5 @@
 import { createReadStream, createWriteStream } from 'node:fs';
-import { writeFile,rename } from 'node:fs/promises';
+import { writeFile, rename, unlink, access, constants } from 'node:fs/promises';
 import { EOL } from 'node:os';
 import { join, resolve, isAbsolute, dirname, basename } from 'node:path';
 import CONSTANTS from '../constants/index.js';
@@ -34,15 +34,15 @@ export default class FileOperationsService {
     }
 
     async renameFile(path, args) {
-        const [targetFile, newFileName] = this.parseArgs(args);
+        const [targetFile, newFileName] = this.#parseArgs(args);
 
-        const absTargetFilePath = this.getAbsPath(path, targetFile);
+        const absTargetFilePath = this.#getAbsPath(path, targetFile);
         const newRenamedFile = join(dirname(absTargetFilePath), newFileName);
 
         await rename(absTargetFilePath, newRenamedFile);
     }
 
-    parseArgs(args) {
+    #parseArgs(args) {
         const cliArgsStr = args.join(' ');
         const parsedArgs = cliArgsStr.match(/(?:[^\s'"]+|'[^']*'|"[^"]*")+/g);
      
@@ -53,11 +53,11 @@ export default class FileOperationsService {
     }
 
     async copyFile(path, args) {
-        const [targetFile, copyFilePath] = this.parseArgs(args);
+        const [targetFile, copyFilePath] = this.#parseArgs(args);
 
-        const absTargetFilePath = this.getAbsPath(path, targetFile);
-        const absCopyFilePath = this.getAbsPath(path, copyFilePath);
-
+        const absTargetFilePath = this.#getAbsPath(path, targetFile);
+        const absCopyFilePath = this.#getAbsPath(path, copyFilePath);
+        await access(absTargetFilePath, constants.F_OK);
         return new Promise((resolve, reject) => {
             const readStream = createReadStream(absTargetFilePath);
             const writeStream = createWriteStream(join(absCopyFilePath, basename(targetFile)));
@@ -74,7 +74,15 @@ export default class FileOperationsService {
         });
     }
 
-    getAbsPath(currPath, targetPath) {
+    #getAbsPath(currPath, targetPath) {
         return isAbsolute(targetPath) ? targetPath : resolve(currPath, targetPath);
+    }
+
+    async moveFile(path, args) {
+        await this.copyFile(path, args);
+        const [targetFile] = this.#parseArgs(args);
+        const absTargetFilePath = this.#getAbsPath(path, targetFile);
+        await access(absTargetFilePath, constants.F_OK);
+        await unlink(absTargetFilePath);
     }
 }
