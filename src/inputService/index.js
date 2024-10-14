@@ -6,6 +6,7 @@ import ListService from '../listService/index.js';
 import FileOperationsService from '../fileOperationsService/index.js';
 import SystemInfoService from '../systemInfoService/index.js';
 import HashService from '../hashService/index.js';
+import ZipBrotliService from '../zipBrotliService/index.js';
 import CONSTANTS from '../constants/index.js';
 
 export default class InputService {
@@ -75,6 +76,9 @@ export default class InputService {
                         break;
                     case 'hash':
                         await HashService.calculate(this.navigationService.getCurrentDirectory, cliArgs);
+                        break;
+                    case 'compress':
+                        await ZipBrotliService.compress(this.navigationService.getCurrentDirectory, cliArgs);
                         break;
                     default:
                         this.messageService.showInvalidInputMsg();
