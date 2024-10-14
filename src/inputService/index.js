@@ -78,7 +78,10 @@ export default class InputService {
                         await HashService.calculate(this.navigationService.getCurrentDirectory, cliArgs);
                         break;
                     case 'compress':
-                        await ZipBrotliService.compress(this.navigationService.getCurrentDirectory, cliArgs);
+                        await ZipBrotliService.zipUnzip(this.navigationService.getCurrentDirectory, cliArgs);
+                        break;
+                    case 'decompress':
+                        await ZipBrotliService.zipUnzip(this.navigationService.getCurrentDirectory, cliArgs, false);
                         break;
                     default:
                         this.messageService.showInvalidInputMsg();
