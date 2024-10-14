@@ -1,5 +1,4 @@
 import { createInterface } from 'node:readline/promises';
-import { join } from 'node:path';
 import MessageService from '../messageService/index.js';
 import NavigationService from '../navigationService/index.js';
 import ListService from '../listService/index.js';
@@ -8,8 +7,9 @@ import SystemInfoService from '../systemInfoService/index.js';
 import HashService from '../hashService/index.js';
 import ZipBrotliService from '../zipBrotliService/index.js';
 import CONSTANTS from '../constants/index.js';
+import CMD_CONSTANTS from './constants.js';
 
-export default class InputService {
+export default class inputController {
     constructor(username) {
         this.username = username;
         this.readline = createInterface({
@@ -38,57 +38,56 @@ export default class InputService {
         this.readline.on('line', async (input) => {
             const parsedInput = input.trim();
             const [userInput, ...cliArgs] = parsedInput.split(' ');
-            const cliArgsStr = cliArgs.join(' ');
             try {
+                const path = this.navigationService.getCurrentDirectory;
                 switch(userInput) {
-                    case '.exit':
+                    case CMD_CONSTANTS.EXIT:
                         this.#exit();
                         break;
-                    case 'up':
+                    case CMD_CONSTANTS.UP:
                         this.navigationService.up();
                         break;
-                    case 'cd':
-                        await this.navigationService.cd(cliArgsStr);
+                    case CMD_CONSTANTS.CD:
+                        await this.navigationService.cd(cliArgs);
                         break;
-                    case 'ls':
-                        await this.listService.showContentOfDirectory(this.navigationService.getCurrentDirectory);
+                    case CMD_CONSTANTS.LS:
+                        await this.listService.showContentOfDirectory(path);
                         break;
-                    case 'cat':
-                        await this.fileOperationsService.cat(join(this.navigationService.getCurrentDirectory, cliArgsStr));
+                    case CMD_CONSTANTS.CAT:
+                        await this.fileOperationsService.cat(path, cliArgs);
                         break;
-                    case 'add':
-                        await this.fileOperationsService.createFile(join(this.navigationService.getCurrentDirectory, cliArgsStr));
+                    case CMD_CONSTANTS.ADD:
+                        await this.fileOperationsService.createFile(path, cliArgs);
                         break;
-                    case 'rn':
-                        await this.fileOperationsService.renameFile(this.navigationService.getCurrentDirectory, cliArgs);
+                    case CMD_CONSTANTS.RN:
+                        await this.fileOperationsService.renameFile(path, cliArgs);
                         break;
-                    case 'cp':
-                        await this.fileOperationsService.copyFile(this.navigationService.getCurrentDirectory, cliArgs);
+                    case CMD_CONSTANTS.CP:
+                        await this.fileOperationsService.copyFile(path, cliArgs);
                         break;
-                    case 'mv':
-                        await this.fileOperationsService.moveFile(this.navigationService.getCurrentDirectory, cliArgs);
+                    case CMD_CONSTANTS.MV:
+                        await this.fileOperationsService.moveFile(path, cliArgs);
                         break;
-                    case 'rm':
-                        await this.fileOperationsService.deleteFile(this.navigationService.getCurrentDirectory, cliArgs);
+                    case CMD_CONSTANTS.RM:
+                        await this.fileOperationsService.deleteFile(path, cliArgs);
                         break;
-                    case 'os':
+                    case CMD_CONSTANTS.OS:
                         await SystemInfoService.printOsInfo(cliArgs);
                         break;
-                    case 'hash':
-                        await HashService.calculate(this.navigationService.getCurrentDirectory, cliArgs);
+                    case CMD_CONSTANTS.HASH:
+                        await HashService.calculate(path, cliArgs);
                         break;
-                    case 'compress':
-                        await ZipBrotliService.zipUnzip(this.navigationService.getCurrentDirectory, cliArgs);
+                    case CMD_CONSTANTS.COMPRESS:
+                        await ZipBrotliService.zipUnzip(path, cliArgs);
                         break;
-                    case 'decompress':
-                        await ZipBrotliService.zipUnzip(this.navigationService.getCurrentDirectory, cliArgs, false);
+                    case CMD_CONSTANTS.DECOMPRESS:
+                        await ZipBrotliService.zipUnzip(path, cliArgs, false);
                         break;
                     default:
                         this.messageService.showInvalidInputMsg();
                         break;
                 }
             } catch(err) {
-                console.error(err);
                 if(err.message === 'Invalid arguments' || err.code === 'EISDIR') this.messageService.showInvalidInputMsg();
                 else this.messageService.showOpearationFailedMsg();
             }
@@ -103,3 +102,6 @@ export default class InputService {
         process.exit();
     }
 }
+
+
+

@@ -7,8 +7,8 @@ import ArgsPathParser from '../argsParser/index.js';
 export default class ZipBrotliService {
     static async zipUnzip(path, args, isCompress = true) {
         try {
-            const [targetFile, newFileName] = ArgsPathParser.parseArgs(args);
-
+            const [targetFile, newFileName] = ArgsPathParser.parseArgs(args, false);
+            console.log(targetFile, newFileName)
             const absTargetFilePath = ArgsPathParser.getAbsPath(path, targetFile);
             const absCopyFilePath = ArgsPathParser.getAbsPath(path, newFileName);
             const outputFileName = isCompress ? basename(targetFile).concat('.br') : basename(targetFile).replace('.br', '');

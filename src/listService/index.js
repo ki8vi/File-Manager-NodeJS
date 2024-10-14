@@ -10,7 +10,6 @@ export default class ListService {
             const files = contents.filter(item => item.isFile()).sort((a, b) => a.name.localeCompare(b.name));
             const innerList = dirs.map((dir) => ({ name: dir.name, type: 'Directory' }))
             .concat(files.map((file) => ({ name: file.name, type: 'File' })));
-    
             console.table(innerList);
         } catch {
             throw new Error('catch me!')

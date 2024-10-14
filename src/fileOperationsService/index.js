@@ -7,16 +7,19 @@ import ArgsPathParser from '../argsParser/index.js';
 
 export default class FileOperationsService {
 
-    async cat(path) {
-        const readStream = createReadStream(path, { encoding: 'utf8' });
+    async cat(path, args) {   
+        const parsedArg = ArgsPathParser.parseArgs(args);
+        const targetFilePath = join(path, parsedArg);
+     
+        const readStream = createReadStream(targetFilePath, { encoding: 'utf8' });
 
         readStream.on('data', (ch) => {
             process.stdout.write(`${CONSTANTS.ANSI_COLOR_BOLD}${CONSTANTS.ANSI_COLOR_LIGHT}${ch}`);
         });
 
         return new Promise((resolve, reject) => {
-            readStream.on('error', () => {
-                reject(new Error('Invalid arguments'));
+            readStream.on('error', (err) => {
+                reject(new Error(err.message));
             });
 
             readStream.on('end', () => {
@@ -26,12 +29,14 @@ export default class FileOperationsService {
         });
     }
 
-    async createFile(path) {
-        await writeFile(path, '', 'utf8');
+    async createFile(path, args) {
+        const parsedArg = ArgsPathParser.parseArgs(args);
+        const targetFilePath = join(path, parsedArg);
+        await writeFile(targetFilePath, '', 'utf8');
     }
 
     async renameFile(path, args) {
-        const [targetFile, newFileName] = ArgsPathParser.parseArgs(args);
+        const [targetFile, newFileName] = ArgsPathParser.parseArgs(args, false);
 
         const absTargetFilePath = ArgsPathParser.getAbsPath(path, targetFile);
         const newRenamedFile = join(dirname(absTargetFilePath), newFileName);
@@ -40,10 +45,11 @@ export default class FileOperationsService {
     }
 
     async copyFile(path, args) {
-        const [targetFile, copyFilePath] = ArgsPathParser.parseArgs(args);
+        const [targetFile, copyFilePath] = ArgsPathParser.parseArgs(args, false);
 
         const absTargetFilePath = ArgsPathParser.getAbsPath(path, targetFile);
         const absCopyFilePath = ArgsPathParser.getAbsPath(path, copyFilePath);
+
         await access(absTargetFilePath, constants.F_OK);
         return new Promise((resolve, reject) => {
             const readStream = createReadStream(absTargetFilePath);
@@ -64,11 +70,13 @@ export default class FileOperationsService {
     async moveFile(path, args) {
         await this.copyFile(path, args);
         await this.deleteFile(path, args);
+        
     }
 
     async deleteFile(path, args) {
-        const [targetFile] = args;
+        const [targetFile] = ArgsPathParser.parseArgs(args, false);
         const absTargetFilePath = ArgsPathParser.getAbsPath(path, targetFile);
+   
         await access(absTargetFilePath, constants.F_OK);
         await unlink(absTargetFilePath);
     }

@@ -7,8 +7,7 @@ export default class HashService {
 
     static async calculate(currPath, args) {
         const parseArgs = ArgsPathParser.parseArgs(args);
-        if(parseArgs.length > 1) throw new Error('Invalid arguments');
-        const targetFilePath = ArgsPathParser.getAbsPath(currPath, parseArgs.join(''));
+        const targetFilePath = ArgsPathParser.getAbsPath(currPath, parseArgs);
         const readFileStream = createReadStream(targetFilePath);
         const hasher = createHash('sha256');
         await pipeline(readFileStream, hasher);

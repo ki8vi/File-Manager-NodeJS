@@ -19,6 +19,8 @@ No external dependencies are required.
 To start the application, run the following command:
 ```npm run start -- --username=your_username```
 ### Commands
+### NOTE: If a file or directory name in the path contains spaces, enclose the name in either single or double quotes to ensure it is correctly processed. Be sure to match the opening and closing quotes, using the same type (either both single or both double)
+### EXAMPLE: ```desktop/my project/super app/start it.exe``` should be ```desktop/'my project'/'super app'/'start it.exe'```
  - Navigation:
     - ```up```: Go up one directory.
     - ```cd```: path_to_directory: Change to the specified directory.

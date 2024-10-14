@@ -1,6 +1,7 @@
 import { access, stat } from 'node:fs/promises';
-import { resolve, isAbsolute  } from 'node:path';
+import { resolve, isAbsolute, join  } from 'node:path';
 import { homedir} from 'node:os';
+import ArgsPathParser from '../argsParser/index.js';
 
 export default class NavigationService {
     constructor() {
@@ -16,13 +17,15 @@ export default class NavigationService {
     }
 
     async cd(path) {
-        let newDirectory;
-        if (isAbsolute(path)) {
-            newDirectory = path;
-        } else {
-            newDirectory = resolve(this._currentDir, path);
-        }
 
+        const parsedPath = ArgsPathParser.parseArgs(path);
+        let newDirectory;
+        if (isAbsolute(parsedPath)) {
+            newDirectory = parsedPath;
+        } else {
+            newDirectory = resolve(this._currentDir, parsedPath);
+        }
+ 
         await access(newDirectory);
         const stats = await stat(newDirectory);
         if (stats.isDirectory()) {
@@ -36,8 +39,4 @@ export default class NavigationService {
     get getCurrentDirectory() {
         return this._currentDir;
     }
-
-    // set setCurrentDirectory(newDirectory) {
-    //     this._currentDir = newDirectory;
-    // }
 }
